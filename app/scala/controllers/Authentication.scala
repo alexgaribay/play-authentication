@@ -8,18 +8,15 @@ trait Authentication {
 
   val AUTH_TOKEN_HEADER = "X-AUTH-TOKEN"
 
-  object Authenticated extends Security.AuthenticatedBuilder(req => getUserFromRequest(req))
+  object Authenticated extends Security.AuthenticatedBuilder(checkTokenAndGetUser(_), onUnauthorized(_))
 
-  def getUserFromRequest(request: RequestHeader): Option[User] = {
-    request.headers.get(AUTH_TOKEN_HEADER) match {
-      case Some(token) => {
-        import play.api.Play.current
-        play.api.db.slick.DB.withSession { implicit session =>
-          userTokens.getUserFromToken(token)
-        }
+  def checkTokenAndGetUser(request: RequestHeader): Option[User] = {
+    request.headers.get(AUTH_TOKEN_HEADER).flatMap( token =>
+      import play.api.Play.current
+      play.api.db.slick.DB.withSession { implicit session =>
+        userTokens.getUserFromToken(token)
       }
-      case _ => None
-    }
+    )
   }
 
   def onUnauthorized(request: RequestHeader) = Results.Unauthorized
