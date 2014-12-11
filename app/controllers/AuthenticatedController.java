@@ -7,7 +7,7 @@ import play.mvc.Result;
  */
 public class AuthenticatedController extends SecuredController {
 
-    public static Result action() {
+    public static Result authenticatedAction() {
         return ok("Hi, " + request().username());
     }
 

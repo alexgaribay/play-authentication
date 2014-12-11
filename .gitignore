@@ -16,3 +16,4 @@ dist
 activator
 activator-launch-1.2.2.jar
 activator.bat
+conf/evolutions
